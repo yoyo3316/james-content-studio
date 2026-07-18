@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>James Content Studio｜研究分享開戶獲客流程</title>
+  <meta name="description" content="James（凱基證券）個人品牌：一步步完成帳號申請、報告轉貼文、排程與發佈。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=DM+Sans:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand-block">
+        <div class="logo">JC</div>
+        <div>
+          <div class="brand-title">James Content Studio</div>
+          <div class="brand-sub">凱基證券 · 個人品牌獲客</div>
+        </div>
+      </div>
+
+      <nav class="steps-nav" id="stepsNav"></nav>
+
+      <div class="sidebar-foot">
+        <div class="progress-label">整體進度</div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-text" id="progressText">0%</div>
+        <button type="button" class="btn ghost full" id="resetBtn">重置本機進度</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow" id="stepEyebrow">STEP 01</p>
+          <h1 id="stepTitle">歡迎</h1>
+          <p class="lead" id="stepLead">線上引導你完成第一個帳號與內容產線。</p>
+        </div>
+        <div class="top-actions">
+          <span class="pill" id="savePill">已自動儲存於瀏覽器</span>
+        </div>
+      </header>
+
+      <section class="panel" id="stepPanel"></section>
+
+      <footer class="nav-footer">
+        <button type="button" class="btn ghost" id="prevBtn">上一步</button>
+        <button type="button" class="btn primary" id="nextBtn">下一步</button>
+      </footer>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="assets/pipeline.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
