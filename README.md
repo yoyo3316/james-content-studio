@@ -1,35 +1,27 @@
-# James Content Studio
+# TraderWin Studio（James）
 
-James（凱基證券）個人品牌｜研究報告 → Threads／IG 貼文的**線上逐步引導工作室**。
+線上逐步引導：個人品牌命名 → 申請 IG/Threads → 主動ETF日更 → AI 提示詞（報告轉圖文）→ 排版 → 合規 → 週曆 → 發佈。
 
 ## 線上使用
 
-部署後網址：
-
 **https://yoyo3316.github.io/james-content-studio/**
 
-（若尚未生效，請等 1–2 分鐘或到 repo Settings → Pages 確認。）
+若瀏覽器還是舊版預設（含 kgi 字樣），請按頁面「重置本機進度」或清掉該站 localStorage。
 
-## 功能
+## 建議品牌
 
-1. 品牌設定（預設 James｜凱基證券）
-2. **第一個帳號申請引導**（IG + Threads 檢查清單 + 定位文）
-3. 上傳／貼上研究報告 → 自動重點整理 → Threads／IG／落地頁文案
-4. 合規關鍵字檢查
-5. 一週貼文規劃
-6. 發佈檢查清單
+| 項目 | 建議 |
+|------|------|
+| 顯示名稱 | James｜TraderWin |
+| 帳號 | @traderwin（備：traderwin.james） |
+| 主頁連結 | https://traderwin1.netlify.app/ |
+| 不要用 | @xxx_kgi 當主帳號名 |
 
-資料存在瀏覽器 `localStorage`，不上傳到伺服器。
+## 內容雙引擎
 
-## 本地預覽（可選）
-
-```bash
-# 任選靜態伺服器
-npx --yes serve .
-```
+1. **每日**：主動式ETF雷達異動／排行  
+2. **每週**：研究報告 → 外部 AI（用站內提示詞）→ 圖文發佈  
 
 ## 技術
 
-- 純靜態前端（HTML / CSS / JS）
-- GitHub Pages 託管
-- PDF 解析：pdf.js（CDN）
+靜態站 · GitHub Pages · localStorage 存進度

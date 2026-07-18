@@ -158,12 +158,13 @@
     const points = (summary.keyPoints || []).slice(0, 4).map((p) => `・${p}`).join("\n") || "・（請補上重點）";
     const risks = (summary.risks || []).slice(0, 2).map((r) => `・${r}`).join("\n");
     const disclaimer = brand.disclaimerShort || "以上內容僅供研究分享，非投資建議，投資有風險，請自行判斷。";
-    const cta = brand.cta || "完整重點與開戶教學 → 連結在主頁";
+    const cta = brand.cta || "主動ETF明細 → 主頁工具｜研究重點可私訊";
     const utm = buildUtm(brand, "threads", ticker);
+    const tool = brand.etfUrl || brand.bioLink || "";
 
-    return `【${marketLabel}】${summary.title}
+    return `${summary.title}
 
-${ticker ? `「${ticker}」` : ""}重點整理：
+${ticker ? `「${ticker}」` : ""}${marketLabel}重點：
 
 ${points}
 
@@ -171,6 +172,7 @@ ${points}
 ${risks}
 
 觀點：${summary.stance}
+${tool ? `\n工具／明細：${tool}` : ""}
 
 ${disclaimer}
 
@@ -228,35 +230,57 @@ ${brand.disclaimerFull || brand.disclaimerShort || ""}
   }
 
   function buildWeekPlan(brand, days = 7) {
-    const pillars = [
-      "個股／標的研究",
-      "市場脈動快評",
-      "觀念／開戶教學",
-      "比較文",
-      "本週觀察摘要"
-    ];
     const rows = [];
     const start = new Date();
     start.setHours(0, 0, 0, 0);
+    // 平日：ETF 日更 + 研究長文交錯；週末：週回顧
+    const researchDays = { 2: "研究圖文（個股／複委託）", 4: "研究圖文（產業／比較）", 6: "本週觀察摘要" };
     for (let d = 0; d < days; d++) {
       const day = new Date(start);
       day.setDate(start.getDate() + d);
-      const wd = day.getDay(); // 0 Sun
+      const wd = day.getDay();
       const date = day.toISOString().slice(0, 10);
       const weekLabel = "日一二三四五六"[wd];
       if (wd === 0) {
-        rows.push({ date, weekLabel, time: "—", platform: "—", pillar: "休息／回顧", notes: "回看數據與留言" });
+        rows.push({
+          date,
+          weekLabel,
+          time: "—",
+          platform: "—",
+          pillar: "休息／回顧數據",
+          notes: "看哪類貼文帶來開戶詢問"
+        });
         continue;
       }
-      const time = wd % 2 === 0 ? "12:15" : "08:30";
+      // 每日 ETF
       rows.push({
         date,
         weekLabel,
-        time,
-        platform: "Threads + IG",
-        pillar: pillars[(d + wd) % pillars.length],
-        notes: `${brand.displayName || "James"} 個人品牌號`
+        time: "08:30",
+        platform: "Threads",
+        pillar: "主動ETF雷達日更",
+        notes: `資料：${brand.etfUrl || brand.bioLink || "traderwin1.netlify.app"}`
       });
+      if (researchDays[wd]) {
+        rows.push({
+          date,
+          weekLabel,
+          time: "20:00",
+          platform: "Threads + IG",
+          pillar: researchDays[wd],
+          notes: "外部AI圖文 → 本站合規後發"
+        });
+      }
+      if (wd === 3) {
+        rows.push({
+          date,
+          weekLabel,
+          time: "12:15",
+          platform: "IG",
+          pillar: "教學：如何看ETF異動／開戶前準備",
+          notes: "導流工具站 + 諮詢"
+        });
+      }
     }
     return rows;
   }

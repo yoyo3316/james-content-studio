@@ -274,6 +274,11 @@ tr:last-child td { border-bottom: 0; }
 }
 .callout strong { color: var(--text); }
 
+.name-card.selected {
+  box-shadow: 0 0 0 1px rgba(61,139,253,.45), 0 12px 30px rgba(61,139,253,.12);
+}
+.name-card h3 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
 .dropzone {
   border: 1.5px dashed rgba(255,255,255,.18);
   border-radius: 14px;
