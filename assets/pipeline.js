@@ -252,14 +252,14 @@ ${brand.disclaimerFull || brand.disclaimerShort || ""}
         });
         continue;
       }
-      // 每日 ETF
+      // 每日 ETF + 發文後互動提醒
       rows.push({
         date,
         weekLabel,
         time: "08:30",
         platform: "Threads",
-        pillar: "主動ETF雷達日更",
-        notes: `資料：${brand.etfUrl || brand.bioLink || "traderwin1.netlify.app"}`
+        pillar: "主動ETF雷達日更（鉤子+提問）",
+        notes: `雷達→短文；發後5-3-1｜${brand.etfUrl || brand.bioLink || "tool"}`
       });
       if (researchDays[wd]) {
         rows.push({
@@ -268,7 +268,7 @@ ${brand.disclaimerFull || brand.disclaimerShort || ""}
           time: "20:00",
           platform: "Threads + IG",
           pillar: researchDays[wd],
-          notes: "外部AI圖文 → 本站合規後發"
+          notes: "AI圖文→合規→IG輪播收藏導向"
         });
       }
       if (wd === 3) {
@@ -277,8 +277,18 @@ ${brand.disclaimerFull || brand.disclaimerShort || ""}
           weekLabel,
           time: "12:15",
           platform: "IG",
-          pillar: "教學：如何看ETF異動／開戶前準備",
-          notes: "導流工具站 + 諮詢"
+          pillar: "教學卡：怎麼看異動／開戶前準備",
+          notes: "轉換支柱 8%｜導工具+私訊"
+        });
+      }
+      if (wd === 5) {
+        rows.push({
+          date,
+          weekLabel,
+          time: "21:00",
+          platform: "Threads",
+          pillar: "觀點／提問串（互動流）",
+          notes: "只拋問題也可；養討論"
         });
       }
     }

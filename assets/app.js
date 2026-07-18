@@ -1,6 +1,6 @@
-/* James Content Studio v2 — 命名／ETF 雷達／AI 提示詞／排版 */
+/* James Content Studio v3 — 市場成功帳號特質 × 作業系統 */
 (function () {
-  const STORAGE_KEY = "james_content_studio_v2";
+  const STORAGE_KEY = "james_content_studio_v3";
 
   const NAME_OPTIONS = [
     {
@@ -45,10 +45,10 @@
     handle: "traderwin",
     nameOptionId: "traderwin",
     niche: "主動ETF追蹤 × 台股／複委託研究",
-    bio: "James｜TraderWin\n主動 ETF 每日追蹤 × 研究重點整理\n工具站看明細，有問題再聊聊開戶\n內容僅供研究分享，投資有風險",
+    bio: "James｜TraderWin\n每天追主動ETF調倉 × 研究重點30秒讀完\n完整明細在主頁工具\n內容研究分享｜投資有風險",
     bioLink: "https://traderwin1.netlify.app/",
     etfUrl: "https://traderwin1.netlify.app/",
-    cta: "主動ETF完整明細 → 主頁工具｜開戶與配置可私訊 James",
+    cta: "完整明細 → 主頁工具｜想執行配置／開戶可私訊",
     disclaimerShort: "內容僅供研究分享，非投資建議，投資有風險，請自行判斷。",
     disclaimerFull:
       "本內容僅供研究與教育分享，不構成任何有價證券之要約、招攬、建議或推薦。投資人應依自身財務狀況與風險承受度獨立判斷。過往績效不代表未來表現。開戶與相關權益以合作證券商官方規定為準。"
@@ -68,17 +68,19 @@
   ];
 
   const STEPS = [
-    { id: "welcome", title: "開始使用", hint: "定位與市場邏輯" },
+    { id: "welcome", title: "開始使用", hint: "全貌" },
+    { id: "market", title: "成功帳號特質", hint: "案例與可抄作業" },
     { id: "brand", title: "命名與品牌", hint: "選帳號方案" },
     { id: "account", title: "申請主帳號", hint: "IG + Threads" },
-    { id: "etf", title: "每日ETF內容", hint: "雷達站輸出" },
+    { id: "system", title: "內容作業系統", hint: "支柱比例與節奏" },
+    { id: "etf", title: "每日ETF內容", hint: "雷達→貼文" },
     { id: "prompts", title: "AI 提示詞", hint: "報告→圖文" },
     { id: "layout", title: "排版規範", hint: "圖卡與文案" },
-    { id: "report", title: "產出貼文", hint: "貼上報告／AI稿" },
+    { id: "report", title: "產出貼文", hint: "報告／AI稿" },
     { id: "compliance", title: "合規檢查", hint: "發佈前" },
-    { id: "calendar", title: "一週規劃", hint: "ETF+研究" },
-    { id: "publish", title: "發佈追蹤", hint: "上線清單" },
-    { id: "done", title: "完成總覽", hint: "下一步" }
+    { id: "calendar", title: "一週規劃", hint: "可執行日曆" },
+    { id: "publish", title: "發佈＋互動", hint: "5-3-1" },
+    { id: "done", title: "完成總覽", hint: "7天行動" }
   ];
 
   const SAMPLE_REPORT = `# 台積電（2330）法說會後觀察摘要
@@ -132,7 +134,9 @@
         scheduled: false,
         posted: false,
         logged: false,
-        etfLinked: false
+        etfLinked: false,
+        engage531: false,
+        hookOk: false
       },
       completedSteps: {}
     };
@@ -187,8 +191,10 @@
 
   function evaluateCompletions() {
     markStepComplete("welcome", true);
+    markStepComplete("market", true);
     markStepComplete("brand", !!(state.brand.displayName && state.brand.handle && !/kgi/i.test(state.brand.handle)));
     markStepComplete("account", accountProgress().ratio >= 0.8);
+    markStepComplete("system", true);
     markStepComplete("etf", !!(state.brand.etfUrl && (state.etfNotes || state.etfPosts.threads)));
     markStepComplete("prompts", true);
     markStepComplete("layout", true);
@@ -199,7 +205,7 @@
     } else markStepComplete("compliance", false);
     markStepComplete("calendar", (state.weekPlan || []).length > 0);
     const p = state.publishChecks;
-    markStepComplete("publish", p.reviewed && p.posted);
+    markStepComplete("publish", p.reviewed && p.posted && p.engage531);
     markStepComplete("done", accountProgress().ratio >= 0.5);
   }
 
@@ -214,9 +220,9 @@
     state.brand.displayName = opt.displayName;
     state.brand.handle = opt.handle;
     state.brand.bio = `${opt.displayName}
-主動 ETF 每日追蹤 × 研究重點整理
-工具站看明細，配置與開戶再私訊
-內容僅供研究分享，投資有風險`;
+每天追主動ETF調倉 × 研究重點30秒讀完
+完整明細在主頁工具
+內容研究分享｜投資有風險`;
     state.brand.niche = "主動ETF追蹤 × 台股／複委託研究";
     state.brand.cta = "主動ETF完整明細 → 主頁工具｜想了解開戶可私訊 James";
     state.brand.bioLink = state.brand.etfUrl || "https://traderwin1.netlify.app/";
@@ -270,17 +276,19 @@
     document.getElementById("stepEyebrow").textContent = `STEP ${String(state.stepIndex + 1).padStart(2, "0")} / ${String(STEPS.length).padStart(2, "0")}`;
     document.getElementById("stepTitle").textContent = step.title;
     const leads = {
-      welcome: "市場上能長大的財經帳號，幾乎都是「人名品牌 + 清楚價值」而不是「券商縮寫帳號」。你已有主動ETF雷達工具，這會是每天穩定輸出與開戶誘因。",
-      brand: "選定顯示名稱與 @帳號。建議不要用 kgi：容易像官方／廣告，也削弱個人品牌。",
-      account: "只開一組 IG+Threads 主帳。邊做邊勾選；定位文已重寫成「價值說明」而不是防禦式口吻。",
-      etf: "每天從主動ETF雷達抓異動 → 變成 Threads／IG。工具連結同時服務內容與開戶興趣。",
-      prompts: "報告丟給其他 AI 時，直接複製這裡的提示詞。已含排版、風險與 CTA 規則。",
-      layout: "圖文好不好看，一半靠排版規範。這裡給可執行的尺寸、字級、頁面結構。",
-      report: "可貼原始報告，或貼外部 AI 已整理好的稿，再一鍵轉成本站格式。",
-      compliance: "發佈前掃描禁用詞與免責。",
-      calendar: "一週同時排：ETF 日更 + 研究長文，避免只發報告或只發數據。",
-      publish: "抽審 → 發佈 → 回填詢問／開戶線索。",
-      done: "完成度與未來 7 天執行清單。"
+      welcome: "這次流程已對齊市場上能長大的財經帳號做法：窄定位、可預期欄目、鉤子、工具磁鐵、發文後互動。你的差異化是「主動ETF雷達 + 研究摘要」。",
+      market: "先看成功案例在做什麼，再抄「方法」不抄「人設」。下方每則都有「你可以偷學什麼」。",
+      brand: "人名／自創品牌當帳號，公司放簡介。建議 James｜TraderWin。",
+      account: "一組 IG+Threads 主帳即可。精選分類對齊內容支柱。",
+      system: "成功帳號通常 3–5 個內容支柱、固定比例。這裡已替你算好 TraderWin 專用配比。",
+      etf: "日更不用自己產數據——打開雷達站轉譯即可。Threads 搶討論。",
+      prompts: "報告給外部 AI 用提示詞；保持數字可核對。",
+      layout: "一致性 > 華麗。同一套版型打 100 篇。",
+      report: "原始報告或 AI 稿都能產 Threads／IG。",
+      compliance: "FAIL 不發。WARN 人工看。",
+      calendar: "依支柱自動排一週；可直接當待辦。",
+      publish: "發佈只是一半；5-3-1 互動才是成長引擎。",
+      done: "7 天行動清單，照做就有節奏。"
     };
     document.getElementById("stepLead").textContent = leads[step.id] || "";
     const pct = progressPercent();
@@ -294,39 +302,130 @@
       <div class="stack">
         <div class="hero-stats">
           <div class="stat"><span>人物</span><b>James</b></div>
-          <div class="stat"><span>產品鉤子</span><b>主動ETF雷達</b></div>
+          <div class="stat"><span>名單磁鐵</span><b>ETF雷達</b></div>
           <div class="stat"><span>目標</span><b>信任→開戶</b></div>
         </div>
         <div class="callout">
-          <strong>成功案例共通點（命名與定位）</strong><br>
-          歐美財經大帳（如 The Financial Diet、Clever Girl Finance）與專業個人品牌，幾乎都是：
-          <strong>好念的名字 + 你能得到什麼</strong>，而不是機構代號。
-          券商名稱放簡介一行即可；帳號本體應是你的研究品牌。你的工具站已有 <strong>TraderWin</strong> 語意，比 @xxx_kgi 更適合當主品牌。
+          <strong>優化後公式（對齊成功帳號）</strong><br>
+          窄定位 → 可預期日更 → Threads 鉤子 → IG 專業圖卡 → 免費工具（雷達）→ 發文後互動 → 私訊開戶。<br>
+          詳見下一步「成功帳號特質」。
         </div>
         <div class="grid-2">
           <div class="card">
-            <h3>你的雙引擎內容</h3>
+            <h3>平台分工（台灣）</h3>
             <ul>
-              <li><strong>每日：</strong>主動ETF異動／排行（工具站）</li>
-              <li><strong>每週：</strong>個股／複委託研究報告（外部AI整理→圖文）</li>
-              <li><strong>轉換：</strong>看明細→想配置→開戶諮詢</li>
+              <li><strong>Threads：</strong>觸及、討論、日更短訊</li>
+              <li><strong>IG：</strong>輪播信任、精選、收藏</li>
+              <li><strong>工具站：</strong>每天回來的理由</li>
             </ul>
           </div>
           <div class="card">
-            <h3>完整流程（本站）</h3>
+            <h3>本站路徑</h3>
             <ul>
-              <li>命名 → 申請主帳</li>
-              <li>ETF 日更模板</li>
-              <li>AI 提示詞（報告→圖文）</li>
-              <li>排版規範 → 產文 → 合規 → 週曆 → 發佈</li>
+              <li>案例特質 → 命名 → 申請</li>
+              <li>內容作業系統（支柱%）</li>
+              <li>ETF／AI 報告 → 排版合規</li>
+              <li>週曆 → 發佈 + 5-3-1</li>
             </ul>
           </div>
         </div>
         <div class="card">
           <h3>工具站</h3>
-          <p><a href="https://traderwin1.netlify.app/" target="_blank" rel="noopener">https://traderwin1.netlify.app/</a> — 主動式ETF雷達（日曆／異動／排行／最大漲幅）</p>
+          <p><a href="https://traderwin1.netlify.app/" target="_blank" rel="noopener">https://traderwin1.netlify.app/</a></p>
         </div>
       </div>`;
+  }
+
+  function viewMarket() {
+    const cases = (window.JCPlaybook && JCPlaybook.CASES) || [];
+    const traits = (window.JCPlaybook && JCPlaybook.TRAITS) || [];
+    const caseHtml = cases
+      .map(
+        (c) => `<div class="card">
+        <h3>${escapeHtml(c.name)}</h3>
+        <p class="help">${escapeHtml(c.type)}</p>
+        <ul>${c.traits.map((t) => `<li>${escapeHtml(t)}</li>`).join("")}</ul>
+        <p><strong>可偷學：</strong>${escapeHtml(c.steal)}</p>
+      </div>`
+      )
+      .join("");
+    const traitHtml = traits
+      .map((t) => `<div class="card"><h3>${escapeHtml(t.title)}</h3><p>${escapeHtml(t.desc)}</p></div>`)
+      .join("");
+    return `
+      <div class="stack">
+        <div class="callout">
+          以下為公開可觀察的<strong>經營型態</strong>。重點是共通特質，不是複製同一個網紅。
+        </div>
+        <h3 style="margin:0">成功帳號舉例</h3>
+        <div class="grid-2">${caseHtml}</div>
+        <h3 style="margin:0">8 個共通特質</h3>
+        <div class="grid-2">${traitHtml}</div>
+        <div class="card">
+          <h3>對照 James／TraderWin</h3>
+          <ul>
+            <li>窄定位：主動ETF調倉 + 研究30秒摘要</li>
+            <li>名單磁鐵：雷達站（已有）</li>
+            <li>Threads 日更 + IG 輪播養專業</li>
+            <li>軟轉換：明細免費 → 開戶私訊</li>
+          </ul>
+        </div>
+      </div>`;
+  }
+
+  function viewSystem() {
+    const pillars = (window.JCPlaybook && JCPlaybook.PILLARS) || [];
+    const hooks = (window.JCPlaybook && JCPlaybook.HOOKS) || [];
+    const os = (window.JCPlaybook && JCPlaybook.weekOS(state.brand)) || [];
+    const engage = window.JCPlaybook && JCPlaybook.ENGAGE_531;
+    const pillarRows = pillars
+      .map(
+        (p) => `<tr>
+        <td><strong>${p.pct}%</strong></td>
+        <td>${escapeHtml(p.name)}</td>
+        <td>${escapeHtml(p.platform)}</td>
+        <td>${escapeHtml(p.goal)}</td>
+      </tr>`
+      )
+      .join("");
+    const osHtml = os
+      .map(
+        (b) => `<div class="card"><h3>${escapeHtml(b.day)}</h3><ul>${b.items
+          .map((i) => `<li>${escapeHtml(i)}</li>`)
+          .join("")}</ul></div>`
+      )
+      .join("");
+    return `
+      <div class="stack">
+        <div class="callout">
+          成功帳號用<strong>支柱比例</strong>平衡「專業」與「流量」。ETF 日更比例最高＝你有可防守的節奏。
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>比例</th><th>支柱</th><th>平台</th><th>目的</th></tr></thead>
+            <tbody>${pillarRows}</tbody>
+          </table>
+        </div>
+        <div class="card">
+          <h3>鉤子公式</h3>
+          <ul>${hooks.map((h) => `<li>${escapeHtml(h)}</li>`).join("")}</ul>
+          <button type="button" class="btn small" id="copyHooksBtn">複製全部鉤子</button>
+        </div>
+        <div class="grid-2">${osHtml}</div>
+        ${
+          engage
+            ? `<div class="card"><h3>${escapeHtml(engage.title)}</h3><ul>${engage.steps
+                .map((s) => `<li>${escapeHtml(s)}</li>`)
+                .join("")}</ul></div>`
+            : ""
+        }
+      </div>`;
+  }
+
+  function bindSystem() {
+    document.getElementById("copyHooksBtn")?.addEventListener("click", () => {
+      copyText((JCPlaybook.HOOKS || []).join("\n"), " 鉤子");
+    });
   }
 
   function viewBrand() {
@@ -559,8 +658,10 @@
     const b = state.brand;
     const lines = notes.split(/\n/).map((x) => x.trim()).filter(Boolean).slice(0, 6);
     const bullets = lines.slice(0, 4).map((l) => `・${l}`).join("\n");
-    state.etfPosts.threads = `今日主動 ETF 雷達掃過一輪。\n\n${bullets}\n\n這是「管理人調倉現象」整理，不是買賣建議。\n完整明細：${b.etfUrl}\n\n${b.disclaimerShort}\n\n${b.cta}`;
-    state.etfPosts.ig = `## Slide 1 封面\n今日主動ETF雷達\n${b.displayName}\n\n## Slide 2 異動重點\n${lines.slice(0, 3).join("\n")}\n\n## Slide 3 怎麼讀\n看調倉方向與產業偏好，不預測短線漲跌\n\n## Slide 4 CTA\n完整明細：${b.etfUrl}\n${b.disclaimerShort}\n${b.cta}`;
+    const hooks = (window.JCPlaybook && JCPlaybook.HOOKS) || ["今天主動ETF有一個調倉，比股價更值得看："];
+    const hook = hooks[Math.floor(Math.random() * hooks.length)];
+    state.etfPosts.threads = `${hook}\n\n${bullets}\n\n這是管理人調倉現象整理，不是買賣建議。\n你會怎麼解讀這次異動？\n\n完整明細：${b.etfUrl}\n\n${b.disclaimerShort}\n\n${b.cta}`;
+    state.etfPosts.ig = `## Slide 1 封面\n${hook}\n${b.displayName}\n\n## Slide 2 異動重點\n${lines.slice(0, 3).join("\n")}\n\n## Slide 3 怎麼讀\n看調倉方向與產業偏好，不預測短線漲跌\n\n## Slide 4 CTA\n完整明細：${b.etfUrl}\n${b.disclaimerShort}\n${b.cta}`;
     saveState();
     toast("已產生 ETF 日更草稿");
     render();
@@ -889,7 +990,10 @@
       .join("");
     return `
       <div class="stack">
-        <div class="callout">建議節奏：<strong>平日 ETF 短訊</strong> + <strong>週 2～3 則研究圖文</strong>。主頁永遠放雷達工具。</div>
+        <div class="callout">
+          依成功帳號打法：<strong>交易日 ETF 短訊（觸及）</strong> + <strong>週 2–3 研究圖卡（信任）</strong> +
+          <strong>1 則教學／開戶前準備（轉換）</strong>。每則發完做 5-3-1。
+        </div>
         <div style="display:flex;gap:8px">
           <button type="button" class="btn primary" id="regenPlan">重產 7 天</button>
           <button type="button" class="btn ghost" id="copyPlan">複製</button>
@@ -916,11 +1020,14 @@
 
   function viewPublish() {
     const p = state.publishChecks;
+    const engage = window.JCPlaybook && JCPlaybook.ENGAGE_531;
     const items = [
+      ["hookOk", "前兩行有鉤子／結論前置"],
       ["reviewed", "數字與風險已人工核對"],
       ["etfLinked", "Bio／文案已連到 ETF 雷達"],
       ["scheduled", "已排時間"],
       ["posted", "已發佈"],
+      ["engage531", "發文後完成 5-3-1 互動"],
       ["logged", "已記私訊／開戶詢問"]
     ]
       .map(
@@ -932,12 +1039,22 @@
       .join("");
     return `
       <div class="stack">
+        <div class="callout">
+          市場上成長快的帳號，差異常在<strong>發文之後</strong>：回覆、進同溫層、丟問題。不要貼完就關 App。
+        </div>
         <div class="card">
           <h3>發佈對象</h3>
           <p>@${escapeHtml(state.brand.handle)} · ${escapeHtml(state.brand.displayName)}</p>
           <p>研究稿：${state.summary ? escapeHtml(state.summary.title) : "—"}</p>
           <p>ETF稿：${state.etfPosts.threads ? "已有" : "—"}</p>
         </div>
+        ${
+          engage
+            ? `<div class="card"><h3>${escapeHtml(engage.title)}</h3><ul>${engage.steps
+                .map((s) => `<li>${escapeHtml(s)}</li>`)
+                .join("")}</ul></div>`
+            : ""
+        }
         <div class="checklist">${items}</div>
         <pre class="output">${escapeHtml(state.posts.threads || state.etfPosts.threads || "尚無定稿")}</pre>
         <button type="button" class="btn small" id="pubCopy">複製定稿</button>
@@ -967,23 +1084,24 @@
           <div class="stat"><span>主帳</span><b>@${escapeHtml(state.brand.handle)}</b></div>
         </div>
         <div class="card">
-          <h3>未來 7 天</h3>
+          <h3>未來 7 天（對齊成功帳號節奏）</h3>
           <ul>
-            <li>申請 @${escapeHtml(state.brand.handle)}（IG+Threads）</li>
-            <li>Bio 連到 ${escapeHtml(state.brand.etfUrl)}</li>
-            <li>每天雷達 1 則短內容</li>
-            <li>每週 2–3 則研究圖文（外部AI + 本站提示詞）</li>
-            <li>登錄字號核准後再更新簡介，不改品牌主名</li>
+            <li>D1：申請 @${escapeHtml(state.brand.handle)}，Bio→雷達站，發 3 則定位文</li>
+            <li>D2–D6：每天 08:30 ETF Threads + 發文後 5-3-1</li>
+            <li>D2／D4：研究圖文各 1（外部AI+提示詞）</li>
+            <li>D3：1 則教學卡（怎麼看異動／開戶前準備）</li>
+            <li>D6：回顧哪篇帶來私訊；下週只加碼有效類型</li>
+            <li>登錄字號後只改簡介加註，不改品牌主名</li>
           </ul>
         </div>
-        <button type="button" class="btn primary" id="goBrand">回命名步驟</button>
+        <button type="button" class="btn primary" id="goMarket">回成功特質</button>
         <button type="button" class="btn ghost" id="goAccount">去申請帳號</button>
       </div>`;
   }
 
   function bindDone() {
-    document.getElementById("goBrand")?.addEventListener("click", () => {
-      state.stepIndex = STEPS.findIndex((s) => s.id === "brand");
+    document.getElementById("goMarket")?.addEventListener("click", () => {
+      state.stepIndex = STEPS.findIndex((s) => s.id === "market");
       saveState();
       render();
     });
@@ -999,8 +1117,10 @@
     const panel = document.getElementById("stepPanel");
     const views = {
       welcome: viewWelcome,
+      market: viewMarket,
       brand: viewBrand,
       account: viewAccount,
+      system: viewSystem,
       etf: viewEtf,
       prompts: viewPrompts,
       layout: viewLayout,
@@ -1010,10 +1130,12 @@
       publish: viewPublish,
       done: viewDone
     };
-    panel.innerHTML = views[id]();
+    const view = views[id];
+    panel.innerHTML = view ? view() : `<div class="callout">未知步驟</div>`;
     const binders = {
       brand: bindBrand,
       account: bindAccount,
+      system: bindSystem,
       etf: bindEtf,
       prompts: bindPrompts,
       layout: bindLayout,
